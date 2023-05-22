@@ -1,0 +1,30 @@
+name: Compile latex report
+on:
+  push:
+    paths-ignore:
+      - '*.pdf'
+permissions:
+  contents: write
+jobs:
+  compile_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v3
+      - name: Compile document
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: main.tex
+          latexmk_shell_escape: true
+          cache: 'latex'
+      - name: Move and rename
+        run: |
+          mkdir -p build
+          mv main.pdf build/BSc_group_h.pdf
+      - name: Commit report
+        run: |
+          git config --global user.name 'Thomas Schauser'
+          git config --global user.email 'hasc@itu.dk'
+          git add build/BSc_group_h.pdf
+          git commit -m "Compiled report"
+          git push
