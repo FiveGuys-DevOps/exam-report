@@ -1,0 +1,48 @@
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\titlespacing*{\section}
+{0pt}{1.5ex}{1.5ex}
+\titlespacing*{\subsection}
+{0pt}{1.5ex}{1.5ex}
+\graphicspath{ {images/} }
+%\pagestyle{empty}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,      
+    urlcolor=blue,
+    citecolor=black
+}
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ left=20mm,
+ right=20mm,
+ top=20mm,
+ bottom=20mm
+ }
+\renewcommand{\baselinestretch}{1.35}
+\newlength\tindent
+\setlength{\tindent}{\parindent}
+\setlength{\parindent}{0pt}
+\renewcommand{\indent}{\hspace*{\tindent}}
+
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage{pgfplots}
+
+\usepackage
+[style=apa,sortcites=true,
+sorting=nyt,backend=biber]
+{biblatex}
+
+\addbibresource{references.bib}
+
+\DeclareLanguageMapping{english}{english-apa}
+
+\pgfplotsset{compat=1.17}
+\setlength{\belowcaptionskip}{-8.5pt}
+
+\usepackage{amsmath}

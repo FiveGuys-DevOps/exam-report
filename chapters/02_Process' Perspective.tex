@@ -1,0 +1,114 @@
+\subsection*{Working as a team}
+To work together as a team we decided on using GitHub. This was due to how we were already familiar with it, and because it allowed us to use its many useful features such as branching for implementing different features and GitHub actions and workflow files. We created a GitHub organization for the repository so that everyone had the same permissions when it came to accessing and modifying sensitive parts of it such as GitHub secrets.
+\\\\
+Throughout the course we would meet up at least once a week on the day of the lectures. We would often meet some hours before it started to finish up features we were behind on, and leave at the end of the exercises sessions. On some occasions if we felt we were particularly behind we met up more times during the week, often in person but also sometimes online using Discord to communicate and share screens.
+\\\\
+Our team was organized in a way to encourage multiple people working on different tasks. Due to the nature of the course being about implementing many different features this was doable, and to make this task-based approach more manageable for ourselves we made extensive use of GitHub's "issues" page. Using the issues page we had 3 main sections for listing different tasks:
+
+\begin{enumerate}
+    \item Todo: new tasks we have been given by the course or tasks we recognized ourselves that needed to be done. If the task was complex we would write descriptions of what should be done, sometimes with links to lecture tutorials or other comments on how to approach the task.
+    \item In Progress: tasks that one or more people are currently working on. We would often use the "assignee" feature to show who was working on these tasks.
+    \item Done: Tasks that had been fully completed.
+\end{enumerate}
+
+When a task began getting worked on, we would create a new branch specifically for it. This made it easier to avoid merge conflicts when implementing whatever feature or fix it was for, and kept the main branch "complete" in the sense that there wouldn't be unfinished changes on it during feature development. Using branches also allowed us to use CI/CD chains on pushes to branches that didn't deploy to the website server but made local checks. Furthermore, using branches this way allows us to make pull requests through GitHub, and use the nice UI for solving merge conflicts and reviewing each others pull requests before merging to main.
+\\\\
+When working together on the same problem we often used the VS Code "Live Share" extension, which allowed multiple people to work on one persons instance of VS Code. This allowed us to easily do pair programming, or simply help each other with problems.
+
+\subsection{More on Repository Structure}
+
+We used a mono-repository, and apart from the usual \textit{.github} files we have 5 files/folders:
+
+\begin{itemize}
+    \item API\_Spec: Simulator files for testing application.
+    \item PenTests: PDF's of security reports.
+    \item src: Minitwit application files.
+    \item tools: Prometheus file and deployment scripts.
+    \item Other loose files such as MegaLinter files.
+\end{itemize}
+
+We have this structure to keep things organized, but we did sacrifice some organization to keep default file-path structures that some tools use. For example there is a loose MegaLinter file in the root folder. There are also some outdated/unused files in the repository such as our Vagrant file which we ended up not using but kept in case we wanted to use it eventually.
+
+\subsection{System Monitoring}
+
+We use Prometheus with Grafana, and Silk to do various monitoring. With Grafana we have a dashboard accessible at port 3000, which displays:
+% at some point elaborate more on what these stats are and why they are useful
+\begin{itemize}
+    \item Total CPU seconds - line graph of total CPU seconds for the past 24 hours.
+    \item Process Virtual Memory - a line graph of how much virtual memory is being used over the past 24 hours.
+    \item Newly inserted models - a line graph showing the total number of follower and message requests for the past 24 hours.
+    \item Total HTTP requests - a bar chart of the total number of HTTP requests over the past 24 hours.
+\end{itemize}
+
+With Silk we monitor:
+
+\begin{itemize}
+    \item epic stats
+\end{itemize}
+
+\subsection{Logging}
+
+Logging was done using Django's log rotation implementation. We log everything that Django logs, which uses Python defined log levels:
+
+\begin{itemize}
+    \item DEBUG: Low level system information for debugging purposes
+    \item INFO: General system information
+    \item WARNING: Information describing a minor problem that has occurred.
+    \item ERROR: Information describing a major problem that has occurred.
+    \item CRITICAL: Information describing a critical problem that has occurred.
+\end{itemize}
+
+These logs get written to a file called \textit{info.log}. If the log file exceeds 5MB then the file is renamed to \textit{info.log.1}, and a new \textit{info.log} file is created for the most recent logs to be written to. When this new \textit{info.log} file is full, \textit{info.log.1} is renamed to \textit{info.log.2}, and \textit{info.log} renamed to \textit{info.log.1} etc. to have these "rolling" logs up until \textit{info.log.5}.
+% Possible rewrite for shortening:
+% These logs get written to files called \textit{info.log}, \textit{info.log.1} up to \textit{info.log.5}. Using Django's log rotation the logs are rotated once info.log reaches 5MB, and after \textit{info.log.5} the files are deleted.
+\\\\
+At \textit{info.log.5}, if the logs are full and a new \textit{info.log} file needs to be made, it simply gets deleted. This method is done so that we retain enough logs to be useful in case something goes wrong, but don't end up with our logs infinitely increasing over time and requiring unreasonable amounts of space.
+\\\\
+We display the logs on the Django admin page, so that we can access them without SSH'ing into the DigitalOcean droplet.
+
+\subsection{CI/CD chains}
+
+% scenarious include push to branch, push to main and pull request to merge branch with main
+
+When pushing to a branch we have a GitHub workflow file that makes the following checks:
+
+\begin{itemize}
+    \item Starts localhost version of server.
+    \item Performs simulation test.
+    \item Performs Snyk security evaluation check on docker image. Check fails if Snyk finds any "high severity" issues that are fixable.
+    \item Shuts down localhost version of server.
+\end{itemize}
+
+If any of the checks fail the person who pushed can know that their changes break at least the local version of the server.
+\\\\
+On pull-requests multiple quality gates / checks are made using various tools before things are merged to main:
+
+\begin{itemize}
+    \item SonarCloud quality gate - this checks all files for bugs, code smells, vulnerabilities, security hotspots and duplication. We have this configured to the SonarCloud defaults. This is a particularly nice quality gate because on a failure to pass the quality gate we can go to SonarCloud's website to see what problems it found and choose to either fix them or tell SonarCloud to ignore them if we deem them not a problem.
+    \item Snyk quality gate - differently than before, this time Snyk is used to check all \textit{requirements.txt} files. This gate fails only when the PR is adding a dependency with issues.
+    \item MegaLinter - Used once to initially format code to standard styles. Then used to print MegaLinter report for all merges, showing how many "errors" it detects to tell us if we should run it again.
+\end{itemize}
+
+On a successful merge two jobs are performed, one to deploy the new code to the server and another to make an automatic GitHub release. The release job is performed only if the code successfully deploys to the server.
+\\\\
+To deploy to the Digital Ocean server, the job:
+
+\begin{itemize}
+    \item Logs into our Docker Hub (login details saved in GutHub secrets)
+    \item Builds and pushes our Minitwit docker image % to docker hub...?
+    \item Configures SSH keys on webserver using GitHub secrets for SSH details.
+    \item Removes old deployment tools (deploy.sh, docker-compose.yml, prometheus).
+    \item Adds new deployment tools.
+    \item Deploys new changes by running deploy.sh (which runs our docker-compose.yml).
+\end{itemize}
+
+\subsection{Security Assessment}
+
+Impenetrable.
+
+\subsection{Scaling and Load Balancing}
+
+Scaled far and wide.
+
+\subsection{AI-assistance}
+
