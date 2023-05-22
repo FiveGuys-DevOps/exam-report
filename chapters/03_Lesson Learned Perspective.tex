@@ -1,3 +1,9 @@
+\subsection{Evolution and Refactoring}
+
+
+
+\subsection{Operation and Maintenance}
+
 We have encountered two problems when implementing logging during the maintenance phase. Firstly, we did not rotate the log files at the beginning, so the file became big enough that our droplet did not have enough space and stopped working.\\
 This can also be seen in the simulator plots as we have a drop on the 28th of March. Additionally, this has also resulted in us getting more errors because the users that were supposed to be created when the server was down, were not created and could not follow or twit. The solution was to scale up the size of the droplet and introduce rotating log files with max-size to prevent this from happening.\\
 Secondly, we did not check the log formatting. The initial implementation was done based on gathering every data point we needed, therefore the logs had the following formatting:
@@ -11,3 +17,4 @@ However, when implementing the Django-log-viewer, the requested formatting to di
     \{[INFO]\} 2023-05-16 11:04:51,008 django.server: "GET /public HTTP/1.1" 200 1037
 \end{center}
 Therefore, now since we did not use the correct formatting, when accessing the Django-log-viewer, the logs are in one extensive line, instead of being on separate lines.\\
+Another encountered difficulty is that the number of equal tweets on GUI and API is zero. The reason that we concluded was that our GUI took too long to load and in the time it was loading, the simulator already pushed multiple tweets therefore never achieving the parity. This is an unresolved problem in this project's MiniTwit.
