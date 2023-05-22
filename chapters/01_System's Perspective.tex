@@ -1,16 +1,15 @@
-Throughout the courses we are given the task of continuously improve and add features to a legacy code base. The code base in question as an aging mini version of Twitter called \textit{Minitwit}. 
+Throughout this course we were given the task of continuously improving and adding features to a legacy code base. The code base in question was an aging mini version of Twitter called \textit{Minitwit}. 
 
 \section*{Technologies}
 
 \subsection*{Refactoring}
 
-Minitwit was originally written in Python 2 using Flask. The goal was to get the webpage onto a modern framework, this was done by firstly using the library 2to3, which converts python 2 code into python 3 code. Lastly to complete the refactoring we rewrote the code to run using the Django framework.
-
+Minitwit was originally written in Python 2 using Flask. The goal was to get the website running on a modern framework, this was done by firstly using the library 2to3, which converts python 2 code into python 3 code. Lastly to complete the refactoring we rewrote the code to run using the Django framework.
 
 \subsection*{Containerized}
 
-Containerized is a term in software development, which references the fact that you isolate part of your software into containers. To implement this technology we was decided to use Docker. Using such technologies is very beneficial when writing in teams, since you can keep all the moving parts isolated, thus solving the exponentially difficult problem of dependencies. By forcing everyone to use the dependencies within the container, this enables the container to be run on any computer/server having docker installed.
-
+Containerized is a term in software development, which references the fact that you isolate part of your software into containers. To implement this technology we decided to use Docker. Using such technologies is beneficial when writing in teams, since you can keep all the moving parts isolated, thus solving the exponentially difficult problem of dependencies. By forcing everyone to use the dependencies within the container, this enables the container to be run on any computer/server having docker installed.
+\\\\
 We setup a total of 4 Docker containers each responsible for one specific task as seen below:
 
 
@@ -47,14 +46,12 @@ We used 3 static analysis tools:
 \end{enumerate}
 
 \subsection*{Logging}
-Logging has been implemented using Django's logging. We decided to use what Django offered as firstly, implementation and integration-wise these are robust enough and offer the same functionality as other third-party tools. In addition, we tried to limit the extensive use of third party tools as these
-
-
-
+Logging has been implemented using Django's logging. We decided to use what Django offered as firstly, implementation and integration-wise these are robust enough and offer the same functionality as other third-party tools. In addition, we tried to limit the extensive use of third-party tools as these can lead to potential security risks.
 \subsection*{Pentest}
 When it comes to handling something valuable, there will always be people trying to get their hands on it.\\
 In our case, it can come in the form of infiltrating our system in order to acquire confidential information regarding our users or even hijacking a user's account directly.\par
-In order to discover what possible vulnerabilities are present in our system, a series of pentesting
+In order to discover what possible vulnerabilities are possibly exploitable in our system, a series of Pen Tests (Short for \textit{Penetration Testing}) were executed.\\
+The tool used to conduct this testing was \textbf{ZAP} (\textit{Zed Attack Proxy}), in 
 
 \subsection*{Swarm}
 
