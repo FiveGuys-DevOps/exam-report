@@ -17,7 +17,7 @@ When a task began getting worked on, we would create a new branch specifically f
 When working together on the same problem we often used the VS Code "Live Share" extension, which allowed multiple people to work on one persons instance of VS Code. This allowed us to easily do pair programming, or simply help each other with problems.
 % pair programming is specifically where one person is coding whatever another person (who is watching) tells them what to do
 
-\subsection{More on Repository Structure}
+\subsection*{More on Repository Structure}
 
 We used a mono-repository, and apart from the usual \textit{.github} files we have 5 files/folders:
 
@@ -31,7 +31,7 @@ We used a mono-repository, and apart from the usual \textit{.github} files we ha
 
 We have this structure to keep things organized, but we did sacrifice some organization to keep default file-path structures that some tools use. For example there is a loose MegaLinter file in the root folder. There are also some outdated/unused files in the repository such as our Vagrant file which we ended up not using but kept in case we wanted to use it eventually.
 
-\subsection{System Monitoring}
+\subsection*{System Monitoring}
 
 We use Prometheus with Grafana, and Silk to do various monitoring. With Grafana we have a dashboard accessible at port 3000, which displays:
 % at some point elaborate more on what these stats are and why they are useful
@@ -59,7 +59,7 @@ With Silk we monitor how long it takes for different HTTP requests and queries t
 
 A screenshot of this page can be seen on Figure \ref{fig:metrics} in the Appendix.
 
-\subsection{Logging}
+\subsection*{Logging}
 
 Logging was done using Django's log rotation implementation. We log everything that Django logs, which uses Python defined log levels:
 
@@ -79,7 +79,7 @@ At \textit{info.log.5}, if the logs are full and a new \textit{info.log} file ne
 \\\\
 We display the logs on the Django admin page, so that we can access them without SSH'ing into the DigitalOcean droplet.
 
-\subsection{CI/CD chains}
+\subsection*{CI/CD chains}
 
 % scenarious include push to branch, push to main and pull request to merge branch with main
 
@@ -139,12 +139,12 @@ To deploy to the Digital Ocean droplet, the job:
 \label{table:summary_stats}
 \end{table}
 
-\subsection{Scaling and Load Balancing}
+\subsection*{Scaling and Load Balancing}
 
 Without the docker swarm up and running we do not really have any load balancing implemented. Scaling is not automated, but the droplets can be manually scaled vertically using Digital Oceans UI.
 \\\\
 We scaled the main droplet when we noticed the time for requests being particularly slow. We did so as it was the easiest solution at the time and we had enough credits to do so without paying out of our own pockets.
 
-\subsection{AI-assistance}
+\subsection*{AI-assistance}
 
 To speed up the development process, we used a few AI-tools such as GitHub Copilot and Chat-GPT. They were used not as a way of writing the entire project, but more of a way to implement smaller functionalities and trouble shooting. There is the concern of one not learning the material to the full extend, however the things we used it for were merely things one could Google anyways, so it was simply a way to speed up the troubleshooting and perform some of the easier tasks. We still implemented the vast majority of the infrastructure our self.
