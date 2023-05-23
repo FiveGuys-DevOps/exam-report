@@ -34,30 +34,30 @@ We used 3 static analysis tools:
 \begin{enumerate}
     \item SonarCloud performs clean code checks. It is implemented directly into our CI/CD pipeline, where it shows potential bugs amongst being a clean code quality gate.
     \item Snyk is a tool which shows potential vulnerabilities in used dependencies. Snyk creates pull requests on GitHub to update vulnerable dependencies. We also use Snyk as a quality gate for our Docker images and requirement.txt files.
-    \item MegaLinter provides consistency to our code, since there are bunch of ways of writing the same code which are all syntactically correct. Megalinter formats our code to adhere to coding styles.
+    \item MegaLinter provides consistency to our code, since there are bunch of ways of writing the same code which are all syntactically correct. MegaLinter automatically formats our code to adhere to coding styles.
 \end{enumerate}
 
 \subsection*{Logging}
-We decided to use Django's implementation for logging, as implementation and integration-wise this is robust enough and offers the same functionality as other third-party tools.\\
-The reason we did not use the ELK stack for logging is because Django already provided a satisfactory implementation of a log-viewer and logging, taking into account the scale and scope of this project. This also provided simplicity to our project.\\
-In addition, we tried to limit the extensive use of third-party tools as these can lead to potential security risks.
+
+We decided to use Django's built-in logging system, as this is robust enough and offers sufficient functionality for our use-case.\\
+The reason for having robust logging is to log errors and exceptions. As an example, when combining it with monitoring we can see if we get certain errors and thus analyze the cause.
 
 \subsection*{Penetration Testing}
 
-When it comes to handling something valuable, there will always be people trying to get their hands on it.
-In our case, it can come in the form of infiltrating our system in order to acquire confidential information regarding our users, or even hijacking a user's account directly.
+Websites are often targeted by malicious attacks. In our case, this can come in the form of gaining access to our Droplet, acquiring information regarding our users, or even hijacking a user's account.
 \\
-In order to discover what vulnerabilities are possibly exploitable in our system, a series of Pen Tests (Short for \textit{Penetration Testing}) were executed.
-\\
-The tool used to conduct this testing was \textbf{ZAP} (\textit{Zed Attack Proxy}), which in summary conducts a series of simulated attacks and scans the application's infrastructure to detect possible weaknesses and how the system could potentially be breached.
+To test how vulnerable our server was to these attacks we used a tool called \textbf{ZAP} (\textit{Zed Attack Proxy}), which in summary conducts a series of simulated attacks and scans the application's infrastructure to detect possible weaknesses and how the system could potentially be breached.
 
 \subsection*{Swarm}
-https://github.com/FiveGuys-DevOps/MiniTwit/tree/feature/terraform
-
-F O R   T H E   S W A R M
+\href{https://github.com/FiveGuys-DevOps/MiniTwit/tree/feature/terraform}{Docker Swarm Branch}
 
 
-We are currently using 3 containers as mentioned earlier, however if there is a failure in one of the containers, we manually have to go in look at the logs and make a change. When you have successfully setup a swarm, it will automatically performs actions if you have a failure. The architecture is setup in a way so there are manager nodes and worker nodes. The job of a manager node is to delicate tasks to each worker node, which could be anything from getting data from the database to reboot the node upon failure.
+
+load balancing if one node is doing too much work, another node can help.
+It also has replication. Replcation is when you are running identical instances, so if the main instance crashes the secondary can take over.
+
+
+We are currently using 4 containers as mentioned earlier, however if there is a failure in one of the containers, we manually have to go in look at the logs and make a change. When you have successfully setup a swarm, it will automatically performs actions if you have a failure. The architecture is setup in a way so there are manager nodes and worker nodes. The job of a manager node is to delicate tasks to each worker node, which could be anything from getting data from the database to reboot the node upon failure.
 
 
 
