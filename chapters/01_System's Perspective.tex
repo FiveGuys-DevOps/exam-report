@@ -4,37 +4,27 @@ Throughout this course we were given the task of continuously improving and addi
 
 \subsection*{Refactoring}
 
-Minitwit was originally written in Python 2 using Flask. The goal was to get the website running on a modern framework, this was done by firstly using the library 2to3, which converts python 2 code into python 3 code. Lastly to complete the refactoring we rewrote the code to run using the Django framework.
+Minitwit was originally written in Python 2 using Flask. The goal was to get the website running on a modern framework, this was done by firstly using the library 2to3, which converts Python 2 code into Python 3 code. Lastly to complete the refactoring we rewrote the code to run using the Django framework.
 
-\subsection*{Containerized}
+\subsection*{Containerization}
 
-Containerized is a term in software development, which references the fact that you isolate part of your software into containers. To implement this technology we decided to use Docker. Using such technologies is beneficial when writing in teams, since you can keep all the moving parts isolated, thus solving the exponentially difficult problem of dependencies. By forcing everyone to use the dependencies within the container, this enables the container to be run on any computer/server having docker installed.
-\\\\
-We setup a total of 4 Docker containers each responsible for one specific task as seen below:
-
-
-\begin{enumerate}
-    \item Django server - one of the things we are hosting the ip
-    \item Database - postgres container 
-    \item Prometheus container, collecting data from Django container, how many requests monitoring
-    \item Grafana visualization of performance i.e. monitoring
-\end{enumerate}
+Containerization is a term in software development, which references to bundling application components into container images, which can then be run in isolation on a machine. To implement this technology we decided to use Docker. Using containerization solves the issues of manually installing dependencies and issues with running an application on different operating systems. By containerizing our application, the environment used locally closely resembles the environment on our production server.
 
 \subsection*{Continuous Integration and Continuous Deployment}
 
-DevOps is a development method where the time from the testing environment to production is rapidly shortened using automation to ensure high quality. Since we are using GitHub as our version control tool, we can use built in system for testing before deploying. GitHub has a built in CI/CD tool where you can build a pipeline of checks that have to be completed for the branches to be merged.
+DevOps is a development method where the time from the testing environment to production is rapidly shortened using automation to ensure high quality. Since we are using GitHub as our version control tool, we can use its features for testing before deploying. GitHub has a built in CI/CD tool where you can build a pipeline of checks that must be completed for the branches to be merged.
 
 \subsection*{Cloud}
 
-Since we are creating a web app, we need to host it somewhere, since we do not want our development computers to function as the server. By having a centralized structure, that is, a singular place for hosting, we only had to know one provider, and everyone could connect to it from anywhere. We used a Infrastructure-as-a-Service (IaaS) provider called Digital Ocean, due to them having a nice UX-design and allows for easy horizontal and vertical scaling.
+Since we are creating a web app, we need to host it somewhere. We used an Infrastructure-as-a-Service (IaaS) provider called Digital Ocean, due to it being the recommend provider from the course. Digital Ocean allowed us to create multiple server instances (Droplets), to allow for both horizontal and vertical scaling.
 
 \subsection*{Monitoring}
 
-Monitoring is the act of getting information about the system. An important aspect of monitoring is choosing what to monitor, since it doesn't make sense to log and measure every part of the system, because this would take an unreasonable amount of space. Therefore you need to be selective with what metrics you monitor, to give only the insights you require. This can be anything from the technical aspect of uptime/availability, to more subjective things such as how the users rate your service. The tool of choice for this task were Grafana for *INSERT* tasks and Silk for *INSERT*.
+Monitoring is the act of getting information about the system. An important aspect of monitoring is choosing what to monitor, since it doesn't make sense to log and measure every part of the system, because this would take an unreasonable amount of space and complexity. Therefore you need to be selective with what metrics you monitor, to give only the insights you require. This can be anything from the technical aspect of uptime/availability, to more subjective things such as how the users rate your service. The tool of choice for this task were Prometheus and Grafana.
 
 \subsection*{Software quality}
 
-When writing a piece of software, one can do it fast or one can do it right. If you write something fast to get it to production, then you take on a bit of \textit{debt}, which in itself is not bad as long as it is paid back. This term of writing something fast at the expense of quality is called technical debt.
+When writing a piece of software, one can do it fast or one can do it right. If you write something fast to get it to production, then you take on a bit of technical debt, which in itself is not bad as long as it is paid back.
 \\\\
 The flawed problem lies in the definition which builds upon the term software quality. Software quality can be hard to measure, however one can use guidelines and tools when writing to assist the developer in making the right decisions.
 \\\\
@@ -42,14 +32,15 @@ These tools that analyze code before execution are referred to as static analysi
 \\\\
 We used 3 static analysis tools:
 \begin{enumerate}
-    \item SonarCloud performs many actions. It is implemented directly into our CI/CD pipeline, where it shows bugs amongst other things.
-    \item Snyk is a tool which shows potential vulnerabilities in the code. This can be anything from creating pull requests on GitHub to update dependencies, to showing where in the code these vulnerabilities lie.
-    \item Megalinter provides consistency to our code. Since there are bunch of ways of writing the same code that are all syntactically correct, this tool creates consistency throughout our code base.
+    \item SonarCloud performs clean code checks. It is implemented directly into our CI/CD pipeline, where it shows potential bugs amongst being a clean code quality gate.
+    \item Snyk is a tool which shows potential vulnerabilities in used dependencies. Snyk creates pull requests on GitHub to update vulnerable dependencies. We also use Snyk as a quality gate for our Docker images and requirement.txt files.
+    \item MegaLinter provides consistency to our code, since there are bunch of ways of writing the same code which are all syntactically correct. Megalinter formats our code to adhere to coding styles.
 \end{enumerate}
 
 \subsection*{Logging}
-
-We decided to use Django's implementation for logging, as implementation and integration-wise this is robust enough and offers the same functionality as other third-party tools. In addition, we tried to limit the extensive use of third-party tools as these can lead to potential security risks.
+We decided to use Django's implementation for logging, as implementation and integration-wise this is robust enough and offers the same functionality as other third-party tools.\\
+The reason we did not use the ELK stack for logging is because Django already provided a satisfactory implementation of a log-viewer and logging, taking into account the scale and scope of this project. This also provided simplicity to our project.\\
+In addition, we tried to limit the extensive use of third-party tools as these can lead to potential security risks.
 
 \subsection*{Penetration Testing}
 
@@ -58,29 +49,38 @@ In our case, it can come in the form of infiltrating our system in order to acqu
 \\
 In order to discover what vulnerabilities are possibly exploitable in our system, a series of Pen Tests (Short for \textit{Penetration Testing}) were executed.
 \\
-The tool used to conduct this testing was \textbf{ZAP} (\textit{Zed Attack Proxy}), which in summary conducts a series of fake attacks and scans the application's infrastructure to detect possible weaknesses and how the system could potentially be breached.% are these attacks "fake"? - wdym?
+The tool used to conduct this testing was \textbf{ZAP} (\textit{Zed Attack Proxy}), which in summary conducts a series of simulated attacks and scans the application's infrastructure to detect possible weaknesses and how the system could potentially be breached.
 
 \subsection*{Swarm}
+https://github.com/FiveGuys-DevOps/MiniTwit/tree/feature/terraform
 
 F O R   T H E   S W A R M
 
-\subsection*{Terraform}
 
+We are currently using 3 containers as mentioned earlier, however if there is a failure in one of the containers, we manually have to go in look at the logs and make a change. When you have successfully setup a swarm, it will automatically performs actions if you have a failure. The architecture is setup in a way so there are manager nodes and worker nodes. The job of a manager node is to delicate tasks to each worker node, which could be anything from getting data from the database to reboot the node upon failure.
+
+
+
+\subsection*{Terraform}
+https://github.com/FiveGuys-DevOps/MiniTwit/tree/feature/terraform
+
+Terraform is a infrastructure as code tool, which means it has the ability to interact with different cloud providers using a code interface. This has the benefit of automating a process instead of having to use the GUI of a provider. If you were to have sufficiently setup Terraform with your codebase, you could launch the entire project from any computer with a single command.
 
 
 \section*{Current state}
 
-The current state of the MiniTwit in this project is an in-development version. We have all the major features working, including follow/unfollow, twit, login/logout, view more, avatars, and public/private timelines. However, there are unresolved problems such as: logging does not display as it should, the GUI loads too slow and other code problems. Additionally, there are also 54 security hotspots discovered by SonarCloud.
+The current state of the MiniTwit in this project is an in-development version. We have all the major features working, including follow/unfollow, twit, login/logout, view more, avatars, and public/private timelines. However, there are unresolved problems such as logging does not displaying as it should, the GUI loading slow (as seen in \ref{fig:metrics}) and other issues. Additionally, there are also 54 unresolved security hotspots discovered by SonarCloud.
+\\\\
+When creating a web application where multiple users can connect and share information, trust is at the core of the exchange. Therefore we tried to implement HTTPS to make user data more secure and increase our security against interception attacks.
+\\\\
+The docker swarm could not be implemented as there is a limit on how many droplets can we have running at the same time. A ticket has been submitted to digital ocean's team, but unfortunately, no answer has been received. However, a local implementation of docker swarm can be found in the terraform branch in our git repository.
 
-When creating a web application where multiple users can connect and share information, trust is at the core of the exchange. Therefor we tried to implement HTTPS such that data were 
+\section*{License}
 
+The license of a software is important due to it dictating how external users can use it. A limitation on this section is we only look at the python packages using the following library \textbf{pip-licenses} and command \textbf{pip-licenses --order=license}. This returns a list of all the python packages installed and the corresponding licence as seen in table \ref{tab:dependencies}
+\\\\
+Since we are using libraries which are under the GNU licence, our software becomes derivative work of the dependencies and thus warrants us to also use the GNU licence and publish the changes.
 
-
-\section*{Licence}
-
-The licence of a software is important due to it dictating how external users can use your software. A limitation on this section is we only look at the python packages using the following library \textbf{pip-licenses} and command \textbf{ pip-licenses --order=license}. This returns a list of all the python packages installed and the corresponding licence as seen in table \ref{tab:dependencies}
-
-Since we are using libraries which are under the GNU licence, our software becomes derivative work of the dependencies and thus warrants us to also use the GNU licence and publish the changes.\\
 \begin{table}[ht]
 \centering
 \scalebox{0.6}{%
@@ -128,12 +128,21 @@ unattended-upgrades & 0.1              & UNKNOWN                                
 \caption{All Dependencies}
 \label{tab:dependencies}
 \end{table}
+
 \newpage
 \section*{Architecture}
 
-Figure \ref{fig:system-arch} shows a simplified version of our system architecture. We have one server only consisting of a database. We're running a Postgres database in Docker container on the database server. The database stores it's data in a Docker volume, to ensure persist data.\\
-On our main server, the one the users/simulations connects to, we run a container 3 Docker containers. One is our Django server, which handles the actual MiniTwit server. This container connect to our postgres database on a separate Droplet. Django stores it's logs in a Docker volume 'logs', which we can then use for monitoring logs.\\
-Alongside, we run another Docker container running Prometheus. This receives metrics from the Django container, used for monitoring. On top of that we run a container running Grafana. Grafana contains our dashboard used for monitoring our MiniTwit application. The data Grafana shows is fetched from our Prometheus container.
+Figure \ref{fig:system-arch} above shows a simplified version of our system architecture. We have one server (called a Digital Ocean droplet) only consisting of a database. We're running a Postgres database in a Docker container on the database server. The database stores it's data in a Docker volume, to ensure persist data.
+\\\\
+Our main server is the one that users (which are simulated) connect to. It uses 3 Docker containers:
+
+\begin{enumerate}
+    \item Our Django server, which handles the actual MiniTwit server. This container connects to our postgres database on a separate Droplet. Django stores its logs in a Docker volume 'logs', which we can then be used for monitoring logs.
+    
+    \item Prometheus, which receives metrics from the Django container.
+
+    \item Grafana, which contains our dashboard used for minitoring our MiniTwit application. The data Grafana shows is fetched from the Prometheus container.
+\end{enumerate}
 
 \begin{figure}
     \centering

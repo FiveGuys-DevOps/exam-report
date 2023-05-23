@@ -1,7 +1,8 @@
 \subsection*{Working as a team}
-To work together as a team we decided on using GitHub. This was due to how we were already familiar with it, and because it allowed us to use its many useful features such as branching for implementing different features and GitHub actions and workflow files. We created a GitHub organization for the repository so that everyone had the same permissions when it came to accessing and modifying sensitive parts of it such as GitHub secrets.
+
+To work together as a team we decided on using GitHub. This was due to how we were already familiar with it, and because it allowed us to use its many useful features such as branching for implementing different features, and GitHub actions and workflow files. We created a GitHub organization for the repository so that everyone had the same permissions when it came to accessing and modifying sensitive parts of it (such as GitHub secrets).
 \\\\
-Throughout the course we would meet up at least once a week on the day of the lectures. We would often meet some hours before it started to finish up features we were behind on, and leave at the end of the exercises sessions. On some occasions if we felt we were particularly behind we met up more times during the week, often in person but also sometimes online using Discord to communicate and share screens.
+Throughout the course we would meet up at least once a week on the day of the lectures. We would often meet some hours before it started to finish up features we were behind on, and leave at the end of the exercises sessions. On some occasions, if we felt we were particularly behind on something, we would meet up more times during the week, often in person but sometimes also online using Discord to communicate and share screens.
 \\\\
 Our team was organized in a way to encourage multiple people working on different tasks. Due to the nature of the course being about implementing many different features this was doable, and to make this task-based approach more manageable for ourselves we made extensive use of GitHub's "issues" page. Using the issues page we had 3 main sections for listing different tasks:
 
@@ -14,6 +15,7 @@ Our team was organized in a way to encourage multiple people working on differen
 When a task began getting worked on, we would create a new branch specifically for it. This made it easier to avoid merge conflicts when implementing whatever feature or fix it was for, and kept the main branch "complete" in the sense that there wouldn't be unfinished changes on it during feature development. Using branches also allowed us to use CI/CD chains on pushes to branches that didn't deploy to the website server but made local checks. Furthermore, using branches this way allows us to make pull requests through GitHub, and use the nice UI for solving merge conflicts and reviewing each others pull requests before merging to main.
 \\\\
 When working together on the same problem we often used the VS Code "Live Share" extension, which allowed multiple people to work on one persons instance of VS Code. This allowed us to easily do pair programming, or simply help each other with problems.
+% pair programming is specifically where one person is coding whatever another person (who is watching) tells them what to do
 
 \subsection{More on Repository Structure}
 
@@ -35,16 +37,27 @@ We use Prometheus with Grafana, and Silk to do various monitoring. With Grafana 
 % at some point elaborate more on what these stats are and why they are useful
 \begin{itemize}
     \item Total CPU seconds - line graph of total CPU seconds for the past 24 hours.
+    
     \item Process Virtual Memory - a line graph of how much virtual memory is being used over the past 24 hours.
+    
     \item Newly inserted models - a line graph showing the total number of follower and message requests for the past 24 hours.
+    
     \item Total HTTP requests - a bar chart of the total number of HTTP requests over the past 24 hours.
 \end{itemize}
 
-With Silk we monitor:
+With Silk we monitor how long it takes for different HTTP requests and queries to be met. On our silk dashboard we display four main sections:
 
 \begin{itemize}
-    \item epic stats
+    \item Summary - summary stats such as total number of requests, average time per request, average time spent communicating with the database per request.
+    
+    \item Most Time Overall - Information on the requests that take the most time to complete. For each request displays overall time taken, time taken on queries, and total number of queries.
+
+    \item Most Time Spent in Database - Similar to above but for requests that take the most time to communicate with the Database.
+
+    \item Most Database Queries - Similar to above but for requests that have done the most queries.
 \end{itemize}
+
+A screenshot of this page can be seen on Figure \ref{fig:metrics} in the Appendix.
 
 \subsection{Logging}
 
@@ -91,25 +104,47 @@ On pull-requests multiple quality gates / checks are made using various tools be
 
 On a successful merge two jobs are performed, one to deploy the new code to the server and another to make an automatic GitHub release. The release job is performed only if the code successfully deploys to the server.
 \\\\
-To deploy to the Digital Ocean server, the job:
+To deploy to the Digital Ocean droplet, the job:
 
 \begin{itemize}
     \item Logs into our Docker Hub (login details saved in GutHub secrets)
     \item Builds and pushes our Minitwit docker image % to docker hub...?
-    \item Configures SSH keys on webserver using GitHub secrets for SSH details.
+    \item Configures SSH keys with droplet machine using GitHub secrets for SSH details.
     \item Removes old deployment tools (deploy.sh, docker-compose.yml, prometheus).
     \item Adds new deployment tools.
     \item Deploys new changes by running deploy.sh (which runs our docker-compose.yml).
 \end{itemize}
 
-\subsection{Security Assessment}
+\subsection*{Security Assessment}
 
-Impenetrable.
+\begin{table}[h]
+\begin{tabular}{||>{\centering}m{7cm}| >{\centering}m{2.5cm} |>{\centering\arraybackslash}m{6cm}||}
+    \hline
+    Name & Risk Level & Descriptionn\\
+    \hline\hline
+    Content Security Policy (CSP) Header Not Set & Medium & Balls\\
+    \hline
+    Application Error Disclosure & Low & Bolas\\
+    \hline
+    Cookie No HttpOnly Flag & Low & Cojones\\
+    \hline
+    Server Leaks Version Information via "Server" HTTP Response Header Field & Low & Pelotas\\
+    \hline
+    X-Content-Type-Options Header Missing & Low & Marbles\\
+    \hline
+    User Agent Fuzzer & Informational & Schqweppes\\
+    \hline
+\end{tabular}
+\caption{L + Ratio + I'm balding + HEEEEEELLP}
+\label{table:summary_stats}
+\end{table}
 
 \subsection{Scaling and Load Balancing}
 
-Scaled far and wide.
+Without the docker swarm up and running we do not really have any load balancing implemented. Scaling is not automated, but the droplets can be manually scaled vertically using Digital Oceans UI.
+\\\\
+We scaled the main droplet when we noticed the time for requests being particularly slow. We did so as it was the easiest solution at the time and we had enough credits to do so without paying out of our own pockets.
 
 \subsection{AI-assistance}
 
-To speed up the development process, we used a few AI-tools such as GitHub Copilot and Chat-GPT. They where used not as a way of writing the entire project, but more of a way to implement smaller functionalities and trouble shooting. There is the concern of one not learning the material to the full extend, however the things we used it for were merely things one could Google anyways, so it was simply a way to speed up the troubleshooting and perform some of the easier tasks. We still implemented the vast majority of the infrastructure our self.
+To speed up the development process, we used a few AI-tools such as GitHub Copilot and Chat-GPT. They were used not as a way of writing the entire project, but more of a way to implement smaller functionalities and trouble shooting. There is the concern of one not learning the material to the full extend, however the things we used it for were merely things one could Google anyways, so it was simply a way to speed up the troubleshooting and perform some of the easier tasks. We still implemented the vast majority of the infrastructure our self.
