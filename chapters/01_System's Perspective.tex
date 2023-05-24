@@ -49,41 +49,32 @@ Websites are often targeted by malicious attacks. In our case, this can come in 
 To test how vulnerable our server was to these attacks we used a tool called \textbf{ZAP} (\textit{Zed Attack Proxy}), which in summary conducts a series of simulated attacks and scans the application's infrastructure to detect possible weaknesses and how the system could potentially be breached.
 
 \subsection*{Swarm}
-\href{https://github.com/FiveGuys-DevOps/MiniTwit/tree/feature/terraform}{Docker Swarm Branch}
-
-
-
-load balancing if one node is doing too much work, another node can help.
-It also has replication. Replcation is when you are running identical instances, so if the main instance crashes the secondary can take over.
-
-
-We are currently using 4 containers as mentioned earlier, however if there is a failure in one of the containers, we manually have to go in look at the logs and make a change. When you have successfully setup a swarm, it will automatically performs actions if you have a failure. The architecture is setup in a way so there are manager nodes and worker nodes. The job of a manager node is to delicate tasks to each worker node, which could be anything from getting data from the database to reboot the node upon failure.
-
-
+%\href{https://github.com/FiveGuys-DevOps/MiniTwit/tree/feature/terraform}{Swarm Branch}
+To manage clusters of containers one can use docker swarm. We attempted to implement it in our project to handle load balancing and replication.
+\\
+Load balancing is about distributing work among nodes. As an example, one can implement round-robin, which is the strategy of having a stack of nodes, where the load balancer delegates a job to the top node of the stack, and when the node has completed the job it goes back in the stack again. This ensures that there is a steady distribution of work.
+It also has replication to run multiple instances of nodes in clusters. It allows for the use of running nodes in parallel, this is what enables load balancing and fail-safety.
 
 \subsection*{Terraform}
-https://github.com/FiveGuys-DevOps/MiniTwit/tree/feature/terraform
 
-Terraform is a infrastructure as code tool, which means it has the ability to interact with different cloud providers using a code interface. This has the benefit of automating a process instead of having to use the GUI of a provider. If you were to have sufficiently setup Terraform with your codebase, you could launch the entire project from any computer with a single command.
-
+Terraform is an infrastructure as a code tool, which means it has the ability to interact with different cloud providers using a code interface. This has the benefit of automating a process instead of having to use the GUI of a provider. If you were to have sufficiently set up Terraform with your codebase, you could launch the entire project from any computer with a single command.
 
 \section*{Current state}
-
-The current state of the MiniTwit in this project is an in-development version. We have all the major features working, including follow/unfollow, twit, login/logout, view more, avatars, and public/private timelines. However, there are unresolved problems such as logging does not displaying as it should, the GUI loading slow (as seen in \ref{fig:metrics}) and other issues. Additionally, there are also 54 unresolved security hotspots discovered by SonarCloud.
+The current state of our MiniTwit is an in-development version. We have all the major features working, including follow/unfollow, twit, login/logout, view more, avatars, and public/private timelines. However, there are unresolved problems such as logging not displaying as it should, the GUI loading slow (as seen in \ref{fig:silk metrics}) and other issues such as code smells. Additionally, there are also 54 unresolved security hotspots discovered by SonarCloud.(See more in \ref{fig:sonarcloud})
 \\\\
-When creating a web application where multiple users can connect and share information, trust is at the core of the exchange. Therefore we tried to implement HTTPS to make user data more secure and increase our security against interception attacks.
+When creating a web application where multiple users can connect and share information, trust is at the core of the exchange. Therefore we tried to implement HTTPS to make user data more secure and increase our security against man-in-the-middle attacks.
 \\\\
-The docker swarm could not be implemented as there is a limit on how many droplets can we have running at the same time. A ticket has been submitted to digital ocean's team, but unfortunately, no answer has been received. However, a local implementation of docker swarm can be found in the terraform branch in our git repository.
+The docker swarm we aimed to implement using Terraform could not be done in the end as there is a limit on how many droplets we can have running at the same time. We submitted a ticket to Digital Ocean's team to increase our Droplet limit, but unfortunately we did not receive a reply. However, a local working implementation of docker swarm can be found in the \href{https://github.com/FiveGuys-DevOps/MiniTwit/tree/feature/terraform}{Terraform Branch}, along with the code as infrastructure using Terraform.
 
 \section*{License}
 
-The license of a software is important due to it dictating how external users can use it. A limitation on this section is we only look at the python packages using the following library \textbf{pip-licenses} and command \textbf{pip-licenses --order=license}. This returns a list of all the python packages installed and the corresponding licence as seen in table \ref{tab:dependencies}
+The license of a software is important due to it dictating how external users can use it. A limitation on this section is we only look at the python packages using the library \textit{pip-licenses} and command \textbf{pip-licenses -\--order=license}. This returns a list of all the python packages installed and the corresponding license as seen in Table \ref{tab:dependencies}.
 \\\\
-Since we are using libraries which are under the GNU licence, our software becomes derivative work of the dependencies and thus warrants us to also use the GNU licence and publish the changes.
+Since we are using libraries which are under the GNU license, our software becomes derivative work of the dependencies and thus warrants us to also use the GNU license and publish the changes.
 
 \begin{table}[ht]
 \centering
-\scalebox{0.6}{%
+\scalebox{0.7}{%
 \begin{tabular}{|c|c|c|}
 \hline
 \textbf{Name}       & \textbf{Version} & \textbf{License}                                        \\ \hline
@@ -132,19 +123,18 @@ unattended-upgrades & 0.1              & UNKNOWN                                
 \newpage
 \section*{Architecture}
 
-Figure \ref{fig:system-arch} above shows a simplified version of our system architecture. We have one server (called a Digital Ocean droplet) only consisting of a database. We're running a Postgres database in a Docker container on the database server. The database stores it's data in a Docker volume, to ensure persist data.
+Figure \ref{fig:system-arch} shows a simplified version of our system architecture. We have one server (called a Digital Ocean droplet) only consisting of a database. We're running a Postgres database in a Docker container on the database server. The database stores its data in a Docker volume, to ensure persistent data.
 \\\\
-Our main server is the one that users (which are simulated) connect to. It uses 3 Docker containers:
-
+Our main server is the one that the (simulated) users connect to. It uses 3 Docker containers:
 \begin{enumerate}
-    \item Our Django server, which handles the actual MiniTwit server. This container connects to our postgres database on a separate Droplet. Django stores its logs in a Docker volume 'logs', which we can then be used for monitoring logs.
+    \item The Django server, which handles the actual MiniTwit server. This container connects to our Postgres database on a separate Droplet. Django stores its logs in a Docker volume, which we can then be used for monitoring logs.
     
     \item Prometheus, which receives metrics from the Django container.
 
-    \item Grafana, which contains our dashboard used for minitoring our MiniTwit application. The data Grafana shows is fetched from the Prometheus container.
+    \item Grafana, which contains our dashboard used for monitoring our MiniTwit application. The data Grafana shows is fetched from the Prometheus container.
 \end{enumerate}
 
-\begin{figure}
+\begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{images/system-architechture.png}
     \caption{Simplified system architecture}
