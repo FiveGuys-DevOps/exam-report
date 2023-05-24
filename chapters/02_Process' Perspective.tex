@@ -4,15 +4,16 @@ To work together as a team we decided on using GitHub. This was due to how we we
 \\\\
 Throughout the course we would meet up at least once a week on the day of the lectures. We would often meet some hours before it started to finish up features we were behind on, and leave at the end of the exercises sessions. On some occasions, if we felt we were particularly behind on something, we would meet up more times during the week, often in person but sometimes also online using Discord to communicate and share screens.
 \\\\
-Our team was organized in a way to encourage multiple people working on different tasks. Due to the nature of the course being about implementing many different features this was doable, and to make this task-based approach more manageable for ourselves we made extensive use of GitHub's "issues" page. Using the issues page we had 3 main sections for listing different tasks:
+Our team was organized in a way to encourage multiple people working on different tasks. Due to the nature of the course being about implementing many different features this was doable, and to make this task-based approach more manageable for ourselves we made extensive use of GitHub's "issues" page. Using the issues page we had 4 main sections for listing different tasks:
 
 \begin{enumerate}
-    \item Todo: new tasks we have been given by the course or tasks we recognized ourselves that needed to be done. If the task was complex we would write descriptions of what should be done, sometimes with links to lecture tutorials or other comments on how to approach the task.
-    \item In Progress: tasks that one or more people are currently working on. We would often use the "assignee" feature to show who was working on these tasks.
+    \item Todo: This was used as a backlog of items.
+    \item Issues: New tasks we had been given by the course or tasks we recognized ourselves that needed to be done. If the task was complex we would write descriptions of what should be done, sometimes with links to lecture tutorials or other comments on how to approach the task.
+    \item In Progress: Tasks that one or more people are currently working on. We would often use the "assignee" feature to show who was working on these tasks.
     \item Done: Tasks that had been fully completed.
 \end{enumerate}
 
-When a task began getting worked on, we would create a new branch specifically for it. This made it easier to avoid merge conflicts when implementing whatever feature or fix it was for, and kept the main branch "complete" in the sense that there wouldn't be unfinished changes on it during feature development. Using branches also allowed us to use CI/CD chains on pushes to branches that didn't deploy to the website server but made local checks. Furthermore, using branches this way allows us to make pull requests through GitHub, and use the nice UI for solving merge conflicts and reviewing each others pull requests before merging to main.
+When a task began getting worked on, we would create a new branch specifically for it. This made it easier to avoid merge conflicts when implementing a new feature or fix it was for, and kept the main branch "complete" in the sense that there wouldn't be unfinished changes on it during feature development. Using branches also allowed us to use CI/CD chains on pushes to branches that didn't deploy to the web server but made local checks. Furthermore, using branches this way allows us to make pull requests through GitHub, and use the nice UI for solving merge conflicts and reviewing each others pull requests before merging to main.
 \\\\
 When working together on the same problem we often used the VS Code "Live Share" extension, which allowed multiple people to work on one persons instance of VS Code. This allowed us to easily do pair programming, or simply help each other with problems.
 % pair programming is specifically where one person is coding whatever another person (who is watching) tells them what to do
@@ -29,7 +30,7 @@ We used a mono-repository, and apart from the usual \textit{.github} files we ha
     \item Other loose files such as MegaLinter files.
 \end{itemize}
 
-We have this structure to keep things organized, but we did sacrifice some organization to keep default file-path structures that some tools use. For example there is a loose MegaLinter file in the root folder. There are also some outdated/unused files in the repository such as our Vagrant file which we ended up not using but kept in case we wanted to use it eventually.
+We have this structure to keep things organized, but we did sacrifice some organization to keep default file-path structures that some tools use. For example there is a loose MegaLinter file in the root folder.
 
 \subsection*{System Monitoring}
 
@@ -40,35 +41,36 @@ We use Prometheus with Grafana, and Silk to do various monitoring. With Grafana 
     
     \item Process Virtual Memory - a line graph of how much virtual memory is being used over the past 24 hours.
     
-    \item Newly inserted models - a line graph showing the total number of follower and message requests for the past 24 hours.
+    \item Newly inserted models - a line graph showing the total number of followers and message requests for the past 24 hours.
     
     \item Total HTTP requests - a bar chart of the total number of HTTP requests over the past 24 hours.
 \end{itemize}
-
-With Silk we monitor how long it takes for different HTTP requests and queries to be met. On our silk dashboard we display four main sections:
+A screenshot can be seen on Figure \ref{fig:grafana}.\\
+\newpage
+With Silk, we monitor how long it takes for different HTTP requests and queries to be met. On our Silk dashboard, we display four main sections:
 
 \begin{itemize}
-    \item Summary - summary stats such as total number of requests, average time per request, average time spent communicating with the database per request.
+    \item Summary - summary stats such as the total number of requests, average time per request, and average time spent communicating with the database per request.
     
-    \item Most Time Overall - Information on the requests that take the most time to complete. For each request displays overall time taken, time taken on queries, and total number of queries.
+    \item Most Time Overall - Information on the requests that take the most time to complete. For each request displays the overall time taken, time taken on queries, and the total number of queries.
 
     \item Most Time Spent in Database - Similar to above but for requests that take the most time to communicate with the Database.
 
     \item Most Database Queries - Similar to above but for requests that have done the most queries.
 \end{itemize}
 
-A screenshot of this page can be seen on Figure \ref{fig:metrics} in the Appendix.
+A screenshot of this page can be seen on Figure \ref{fig:silk metrics} in the Appendix.
 
 \subsection*{Logging}
 
-Logging was done using Django's log rotation implementation. We log everything that Django logs, which uses Python defined log levels:
+Logging was done using Django's log rotation implementation. We log everything that Django logs, which uses Python defined log levels:\footnote{https://docs.djangoproject.com/en/4.2/topics/logging/}
 
 \begin{itemize}
     \item DEBUG: Low level system information for debugging purposes
     \item INFO: General system information
     \item WARNING: Information describing a minor problem that has occurred.
     \item ERROR: Information describing a major problem that has occurred.
-    \item CRITICAL: Information describing a critical problem that has occurred.
+    \item CRITICAL: Information describing a critical problem that has occurred. 
 \end{itemize}
 
 These logs get written to a file called \textit{info.log}. If the log file exceeds 5MB then the file is renamed to \textit{info.log.1}, and a new \textit{info.log} file is created for the most recent logs to be written to. When this new \textit{info.log} file is full, \textit{info.log.1} is renamed to \textit{info.log.2}, and \textit{info.log} renamed to \textit{info.log.1} etc. to have these "rolling" logs up until \textit{info.log.5}.
@@ -77,7 +79,7 @@ These logs get written to a file called \textit{info.log}. If the log file excee
 \\\\
 At \textit{info.log.5}, if the logs are full and a new \textit{info.log} file needs to be made, it simply gets deleted. This method is done so that we retain enough logs to be useful in case something goes wrong, but don't end up with our logs infinitely increasing over time and requiring unreasonable amounts of space.
 \\\\
-We display the logs on the Django admin page, so that we can access them without SSH'ing into the DigitalOcean droplet.
+We display the logs on the Django admin page, so that we can access them without SSH'ing into the Digital Ocean droplet.
 
 \subsection*{CI/CD chains}
 
@@ -88,63 +90,78 @@ When pushing to a branch we have a GitHub workflow file that makes the following
 \begin{itemize}
     \item Starts localhost version of server.
     \item Performs simulation test.
-    \item Performs Snyk security evaluation check on docker image. Check fails if Snyk finds any "high severity" issues that are fixable.
-    \item Shuts down localhost version of server.
+    \item Performs a Snyk security evaluation check on our MiniTwit docker image. The check fails if Snyk finds any "high severity" issues that are fixable.
+    \item Shuts down the localhost version of server.
 \end{itemize}
 
 If any of the checks fail the person who pushed can know that their changes break at least the local version of the server.
 \\\\
-On pull-requests multiple quality gates / checks are made using various tools before things are merged to main:
+On pull-requests, multiple quality gates / checks are made using various tools before things are merged to main:
 
 \begin{itemize}
     \item SonarCloud quality gate - this checks all files for bugs, code smells, vulnerabilities, security hotspots and duplication. We have this configured to the SonarCloud defaults. This is a particularly nice quality gate because on a failure to pass the quality gate we can go to SonarCloud's website to see what problems it found and choose to either fix them or tell SonarCloud to ignore them if we deem them not a problem.
     \item Snyk quality gate - differently than before, this time Snyk is used to check all \textit{requirements.txt} files. This gate fails only when the PR is adding a dependency with issues.
-    \item MegaLinter - Used once to initially format code to standard styles. Then used to print MegaLinter report for all merges, showing how many "errors" it detects to tell us if we should run it again.
+    \item MegaLinter - Used once to initially format code to standard styles. Then used to automatically format code to adhere to these styles.
 \end{itemize}
 
+On top of this, to merge a pull request someone also needs to review the changed files and approve it.
+\\\\
 On a successful merge two jobs are performed, one to deploy the new code to the server and another to make an automatic GitHub release. The release job is performed only if the code successfully deploys to the server.
 \\\\
 To deploy to the Digital Ocean droplet, the job:
 
 \begin{itemize}
-    \item Logs into our Docker Hub (login details saved in GutHub secrets)
-    \item Builds and pushes our Minitwit docker image % to docker hub...?
-    \item Configures SSH keys with droplet machine using GitHub secrets for SSH details.
+    \item Logs into our DockerHub (login details saved in GitHub secrets)
+    \item Builds and pushes our MiniTwit docker image to DockerHub
+    \item Configures SSH keys with the Droplet machine using GitHub secrets for SSH details.
+    \item Open an SSH connection to said Droplet.
     \item Removes old deployment tools (deploy.sh, docker-compose.yml, prometheus).
     \item Adds new deployment tools.
     \item Deploys new changes by running deploy.sh (which runs our docker-compose.yml).
 \end{itemize}
 
 \subsection*{Security Assessment}
-
+    
 \begin{table}[h]
-\begin{tabular}{||>{\centering}m{7cm}| >{\centering}m{2.5cm} |>{\centering\arraybackslash}m{6cm}||}
+\centering
+\scalebox{0.9}{%
+\begin{tabular}{||>{\centering}m{7cm}| >{\centering}m{2.5cm} |>{\centering\arraybackslash}m{8cm}||}
     \hline
-    Name & Risk Level & Descriptionn\\
+    Name & Risk Level & Description\\
     \hline\hline
-    Content Security Policy (CSP) Header Not Set & Medium & Balls\\
+    Content Security Policy (CSP) Header Not Set & Medium & Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks, it was not set\\
     \hline
-    Application Error Disclosure & Low & Bolas\\
+    Application Error Disclosure & Low & The register page contains an error/warning message that may disclose sensitive information\\
     \hline
-    Cookie No HttpOnly Flag & Low & Cojones\\
+    Cookie No HttpOnly Flag & Low & A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript\\
     \hline
-    Server Leaks Version Information via "Server" HTTP Response Header Field & Low & Pelotas\\
+    Server Leaks Version Information via "Server" HTTP Response Header Field & Low & The application server is leaking version information via the "Server" HTTP response header\\
     \hline
-    X-Content-Type-Options Header Missing & Low & Marbles\\
-    \hline
-    User Agent Fuzzer & Informational & Schqweppes\\
+    X-Content-Type-Options Header Missing & Low & The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body\\
     \hline
 \end{tabular}
-\caption{L + Ratio + I'm balding + HEEEEEELLP}
-\label{table:summary_stats}
+}
+\caption{Vulnerabilities found through pen-testing using \textbf{ZAP}}
+\label{table:pentest}
 \end{table}
 
-\subsection*{Scaling and Load Balancing}
+\vspace{1cm}
 
-Without the docker swarm up and running we do not really have any load balancing implemented. Scaling is not automated, but the droplets can be manually scaled vertically using Digital Oceans UI.
-\\\\
-We scaled the main droplet when we noticed the time for requests being particularly slow. We did so as it was the easiest solution at the time and we had enough credits to do so without paying out of our own pockets.
+Table \ref{table:pentest} shows the different types of threats present in our application, along with their associated \textit{Risk Level} and a brief description.\\
+There are 4 possible risk levels:
+\vspace{-0.2cm}
+\begin{itemize}
+    \itemsep -0.5em 
+    \item High
+    \item Medium
+    \item Low
+    \item Informational
+\end{itemize}
+
+Our application did not present any high level vulnerabilities, however it did present an informational level vulnerability but it was chosen to not be included in the table since informational level vulnerabilities can simply be disregarded.
+
+
 
 \subsection*{AI-assistance}
 
-To speed up the development process, we used a few AI-tools such as GitHub Copilot and Chat-GPT. They were used not as a way of writing the entire project, but more of a way to implement smaller functionalities and trouble shooting. There is the concern of one not learning the material to the full extend, however the things we used it for were merely things one could Google anyways, so it was simply a way to speed up the troubleshooting and perform some of the easier tasks. We still implemented the vast majority of the infrastructure our self.
+To speed up the development process, we used a few AI-tools such as GitHub Copilot and Chat-GPT. They were used not as a way of writing the entire project, but more of a way to implement smaller functionalities and trouble-shooting. There is the concern of one not learning the material to the full extent, however the things we used it for were merely things one could Google anyways, so it was simply a way to speed up the troubleshooting and perform some of the easier tasks. We still implemented the vast majority of the infrastructure our self.
