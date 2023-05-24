@@ -4,7 +4,8 @@ During development, we encountered a problem with Vagrant. Specifically, Vagrant
 
 \subsection*{Operation and Maintenance}
 
-We encountered two problems when implementing logging during the maintenance phase. Firstly, we did not rotate the log files at the beginning, so the file became big enough that our Droplet did not have enough space and stopped working.\\
+We encountered two problems when implementing logging during the maintenance phase.
+Firstly, we did not rotate the log files at the beginning, so the single log file became big enough that our Droplet did not have enough space and stopped working.\\
 This can be seen in the simulator plots as we have a drop on the 28th of March. Additionally, this has also resulted in us getting more errors because the users that were supposed to be created when the server was down, were not created, so when the simulator attempts to have them follow or twit more errors occur. The solution was to scale up the size of the droplet and introduce rotating log files with max-size to prevent this from happening.\\
 Secondly, we did not check the log formatting. The initial implementation was done based on gathering every data point we needed, therefore the logs had the following formatting:
 \begin{center}
