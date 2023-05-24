@@ -1,10 +1,10 @@
-Throughout this course we were given the task of continuously improving and adding features to a legacy code base. The code base in question was an aging mini version of Twitter called \textit{Minitwit}. 
+Throughout this course we were given the task of continuously improving and adding features to a legacy code base. The code base in question was an aging mini version of Twitter called \textit{MiniTwit}.
 
 \section*{Technologies}
 
 \subsection*{Refactoring}
 
-Minitwit was originally written in Python 2 using Flask. The goal was to get the website running on a modern framework, this was done by firstly using the library 2to3, which converts Python 2 code into Python 3 code. Lastly to complete the refactoring we rewrote the code to run using the Django framework.
+MiniTwit was originally written in Python 2 using Flask. The goal was to get the website running on a modern framework, this was done by firstly using the library 2to3, which converts Python 2 code into Python 3 code. Lastly to complete the refactoring we rewrote the code to run using the Django framework.
 
 \subsection*{Containerization}
 
@@ -20,17 +20,17 @@ Since we are creating a web app, we need to host it somewhere. We used an Infras
 
 \subsection*{Monitoring}
 
-Monitoring is the act of getting information about the system. An important aspect of monitoring is choosing what to monitor, since it doesn't make sense to log and measure every part of the system, because this would take an unreasonable amount of space and complexity. Therefore you need to be selective with what metrics you monitor, to give only the insights you require. This can be anything from the technical aspect of uptime/availability, to more subjective things such as how the users rate your service. The tool of choice for this task were Prometheus and Grafana.
+Monitoring is the act of getting information about the system. An important aspect of monitoring is choosing what to monitor, since it does not make sense to log and measure every part of the system, because this would take an unreasonable amount of space and complexity. Therefore, you need to be selective with what metrics you monitor, to give only the insights you require. This can be anything from the technical aspect of uptime/availability to more subjective things such as how the users rate your service. The tool of choice for this task were Prometheus and Grafana.
 
 \subsection*{Software quality}
 
-When writing a piece of software, one can do it fast or one can do it right. If you write something fast to get it to production, then you take on a bit of technical debt, which in itself is not bad as long as it is paid back.
+When writing a piece of software, one can do it fast, or one can do it right. If you write something fast to get it to production, then you take on a bit of technical debt, which in itself is not bad as long as it is paid back.
 \\\\
 The flawed problem lies in the definition which builds upon the term software quality. Software quality can be hard to measure, however one can use guidelines and tools when writing to assist the developer in making the right decisions.
 \\\\
 These tools that analyze code before execution are referred to as static analysis tools.
 \\\\
-We used 3 static analysis tools:
+We used three static analysis tools:
 \begin{enumerate}
     \item SonarCloud performs clean code checks. It is implemented directly into our CI/CD pipeline, where it shows potential bugs amongst being a clean code quality gate.
     \item Snyk is a tool which shows potential vulnerabilities in used dependencies. Snyk creates pull requests on GitHub to update vulnerable dependencies. We also use Snyk as a quality gate for our Docker images and requirement.txt files.
@@ -57,12 +57,12 @@ It also has replication to run multiple instances of nodes in clusters. It allow
 
 \subsection*{Terraform}
 
-Terraform is an infrastructure as a code tool, which means it has the ability to interact with different cloud providers using a code interface. This has the benefit of automating a process instead of having to use the GUI of a provider. If you were to have sufficiently set up Terraform with your codebase, you could launch the entire project from any computer with a single command.
+Terraform is an infrastructure as a code tool, which means it can interact with different cloud providers using a code interface. This has the benefit of automating a process instead of having to use the GUI of a provider. If you were to have sufficiently set up Terraform with your codebase, you could launch the entire project from any computer with a single command.
 
 \section*{Current state}
-The current state of our MiniTwit is an in-development version. We have all the major features working, including follow/unfollow, twit, login/logout, view more, avatars, and public/private timelines. However, there are unresolved problems such as logging not displaying as it should, the GUI loading slow (as seen in \ref{fig:silk metrics}) and other issues such as code smells. Additionally, there are also 54 unresolved security hotspots discovered by SonarCloud.(See more in \ref{fig:sonarcloud})
+The current state of our MiniTwit is an in-development version. We have all the major features working, including follow/unfollow, twit, login/logout, view more, avatars, and public/private timelines. However, there are unresolved problems such as logging not displaying as it should, the GUI loading slow (as seen in \ref{fig:silk metrics}) and other issues such as code smells. Additionally, there are also 54 unresolved security hotspots discovered by SonarCloud. (See more in \ref{fig:sonarcloud})
 \\\\
-When creating a web application where multiple users can connect and share information, trust is at the core of the exchange. Therefore we tried to implement HTTPS to make user data more secure and increase our security against man-in-the-middle attacks.
+When creating a web application where multiple users can connect and share information, trust is at the core of the exchange. Therefore, we tried to implement HTTPS to make user data more secure and increase our security against man-in-the-middle attacks.
 \\\\
 The docker swarm we aimed to implement using Terraform could not be done in the end as there is a limit on how many droplets we can have running at the same time. We submitted a ticket to Digital Ocean's team to increase our Droplet limit, but unfortunately we did not receive a reply. However, a local working implementation of docker swarm can be found in the \href{https://github.com/FiveGuys-DevOps/MiniTwit/tree/feature/terraform}{Terraform Branch}, along with the code as infrastructure using Terraform.
 
